@@ -1,0 +1,740 @@
+(dp1
+S'output'
+p2
+S''
+sS'layer'
+p3
+S'/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py'
+p4
+sS'code'
+p5
+S'# -*- coding: utf-8 -*-\n\n# ##########################################################\n# ## make sure administrator is on localhost\n# ###########################################################\n\nimport os\nimport socket\nimport datetime\nimport copy\nimport gluon.contenttype\nimport gluon.fileutils\n\n# ## critical --- make a copy of the environment\n\nglobal_env = copy.copy(globals())\nglobal_env[\'datetime\'] = datetime\n\nhttp_host = request.env.http_host.split(\':\')[0]\nremote_addr = request.env.remote_addr\ntry:\n    hosts = (http_host, socket.gethostname(),\n             socket.gethostbyname(http_host),\n             \'::1\',\'127.0.0.1\',\'::ffff:127.0.0.1\')\nexcept:\n    hosts = (http_host, )\n\nif request.env.http_x_forwarded_for or request.env.wsgi_url_scheme\\\n     in [\'https\', \'HTTPS\']:\n    session.secure()\nelif (remote_addr not in hosts) and (remote_addr != "127.0.0.1"):\n    raise HTTP(200, T(\'appadmin is disabled because insecure channel\'))\nif not gluon.fileutils.check_credentials(request):\n    redirect(URL(a=\'admin\', c=\'default\', f=\'index\'))\n\nignore_rw = True\nresponse.view = \'appadmin.html\'\nresponse.menu = [[T(\'design\'), False, URL(\'admin\', \'default\', \'design\',\n                 args=[request.application])], [T(\'db\'), False,\n                 URL(\'index\')], [T(\'state\'), False,\n                 URL(\'state\')], [T(\'cache\'), False,\n                 URL(\'ccache\')]]\n\n# ##########################################################\n# ## auxiliary functions\n# ###########################################################\n\n\ndef get_databases(request):\n    dbs = {}\n    for (key, value) in global_env.items():\n        cond = False\n        try:\n            cond = isinstance(value, GQLDB)\n        except:\n            cond = isinstance(value, SQLDB)\n        if cond:\n            dbs[key] = value\n    return dbs\n\n\ndatabases = get_databases(None)\n\n\ndef eval_in_global_env(text):\n    exec (\'_ret=%s\' % text, {}, global_env)\n    return global_env[\'_ret\']\n\n\ndef get_database(request):\n    if request.args and request.args[0] in databases:\n        return eval_in_global_env(request.args[0])\n    else:\n        session.flash = T(\'invalid request\')\n        redirect(URL(\'index\'))\n\n\ndef get_table(request):\n    db = get_database(request)\n    if len(request.args) > 1 and request.args[1] in db.tables:\n        return (db, request.args[1])\n    else:\n        session.flash = T(\'invalid request\')\n        redirect(URL(\'index\'))\n\n\ndef get_query(request):\n    try:\n        return eval_in_global_env(request.vars.query)\n    except Exception:\n        return None\n\n\ndef query_by_table_type(tablename,db,request=request):\n    keyed = hasattr(db[tablename],\'_primarykey\')\n    if keyed:\n        firstkey = db[tablename][db[tablename]._primarykey[0]]\n        cond = \'>0\'\n        if firstkey.type in [\'string\', \'text\']:\n            cond = \'!=""\'\n        qry = \'%s.%s.%s%s\' % (request.args[0], request.args[1], firstkey.name, cond)\n    else:\n        qry = \'%s.%s.id>0\' % tuple(request.args[:2])\n    return qry\n\n\n\n# ##########################################################\n# ## list all databases and tables\n# ###########################################################\n\n\ndef index():\n    return dict(databases=databases)\n\n\n# ##########################################################\n# ## insert a new record\n# ###########################################################\n\n\ndef insert():\n    (db, table) = get_table(request)\n    form = SQLFORM(db[table], ignore_rw=ignore_rw)\n    if form.accepts(request.vars, session):\n        response.flash = T(\'new record inserted\')\n    return dict(form=form,table=db[table])\n\n\n# ##########################################################\n# ## list all records in table and insert new record\n# ###########################################################\n\n\ndef download():\n    import os\n    db = get_database(request)\n    return response.download(request,db)\n\ndef csv():\n    import gluon.contenttype\n    response.headers[\'Content-Type\'] = \\\n        gluon.contenttype.contenttype(\'.csv\')\n    db = get_database(request)\n    query = get_query(request)\n    if not query:\n        return None\n    response.headers[\'Content-disposition\'] = \'attachment; filename=%s_%s.csv\'\\\n         % tuple(request.vars.query.split(\'.\')[:2])\n    return str(db(query).select())\n\n\ndef import_csv(table, file):\n    table.import_from_csv_file(file)\n\ndef select():\n    import re\n    db = get_database(request)\n    dbname = request.args[0]\n    regex = re.compile(\'(?P<table>\\w+)\\.(?P<field>\\w+)=(?P<value>\\d+)\')\n    if len(request.args)>1 and hasattr(db[request.args[1]],\'_primarykey\'):\n        regex = re.compile(\'(?P<table>\\w+)\\.(?P<field>\\w+)=(?P<value>.+)\')\n    if request.vars.query:\n        match = regex.match(request.vars.query)\n        if match:\n            request.vars.query = \'%s.%s.%s==%s\' % (request.args[0],\n                    match.group(\'table\'), match.group(\'field\'),\n                    match.group(\'value\'))\n    else:\n        request.vars.query = session.last_query\n    query = get_query(request)\n    if request.vars.start:\n        start = int(request.vars.start)\n    else:\n        start = 0\n    nrows = 0\n    stop = start + 100\n    table = None\n    rows = []\n    orderby = request.vars.orderby\n    if orderby:\n        orderby = dbname + \'.\' + orderby\n        if orderby == session.last_orderby:\n            if orderby[0] == \'~\':\n                orderby = orderby[1:]\n            else:\n                orderby = \'~\' + orderby\n    session.last_orderby = orderby\n    session.last_query = request.vars.query\n    form = FORM(TABLE(TR(T(\'Query:\'), \'\', INPUT(_style=\'width:400px\',\n                _name=\'query\', _value=request.vars.query or \'\',\n                requires=IS_NOT_EMPTY(error_message=T("Cannot be empty")))), TR(T(\'Update:\'),\n                INPUT(_name=\'update_check\', _type=\'checkbox\',\n                value=False), INPUT(_style=\'width:400px\',\n                _name=\'update_fields\', _value=request.vars.update_fields\n                 or \'\')), TR(T(\'Delete:\'), INPUT(_name=\'delete_check\',\n                _class=\'delete\', _type=\'checkbox\', value=False), \'\'),\n                TR(\'\', \'\', INPUT(_type=\'submit\', _value=\'submit\'))),\n                _action=URL(r=request,args=request.args))\n    if request.vars.csvfile != None:\n        try:\n            import_csv(db[request.vars.table],\n                       request.vars.csvfile.file)\n            response.flash = T(\'data uploaded\')\n        except Exception, e:\n            response.flash = DIV(T(\'unable to parse csv file\'),PRE(str(e)))\n    if form.accepts(request.vars, formname=None):\n#         regex = re.compile(request.args[0] + \'\\.(?P<table>\\w+)\\.id\\>0\')\n        regex = re.compile(request.args[0] + \'\\.(?P<table>\\w+)\\..+\')\n\n        match = regex.match(form.vars.query.strip())\n        if match:\n            table = match.group(\'table\')\n        try:\n            nrows = db(query).count()\n            if form.vars.update_check and form.vars.update_fields:\n                db(query).update(**eval_in_global_env(\'dict(%s)\'\n                                  % form.vars.update_fields))\n                response.flash = T(\'%s rows updated\', nrows)\n            elif form.vars.delete_check:\n                db(query).delete()\n                response.flash = T(\'%s rows deleted\', nrows)\n            nrows = db(query).count()\n            if orderby:\n                rows = db(query).select(limitby=(start, stop),\n                        orderby=eval_in_global_env(orderby))\n            else:\n                rows = db(query).select(limitby=(start, stop))\n        except Exception, e:\n            (rows, nrows) = ([], 0)\n            response.flash = DIV(T(\'Invalid Query\'),PRE(str(e)))\n    return dict(\n        form=form,\n        table=table,\n        start=start,\n        stop=stop,\n        nrows=nrows,\n        rows=rows,\n        query=request.vars.query,\n        )\n\n\n# ##########################################################\n# ## edit delete one record\n# ###########################################################\n\n\ndef update():\n    (db, table) = get_table(request)\n    keyed = hasattr(db[table],\'_primarykey\')\n    record = None\n    if keyed:\n        key = [f for f in request.vars if f in db[table]._primarykey]\n        if key:\n            record = db(db[table][key[0]] == request.vars[key[0]]).select().first()\n    else:\n        record = db(db[table].id == request.args(2)).select().first()\n\n    if not record:\n        qry = query_by_table_type(table, db)\n        session.flash = T(\'record does not exist\')\n        redirect(URL(\'select\', args=request.args[:1],\n                     vars=dict(query=qry)))\n\n    if keyed:\n        for k in db[table]._primarykey:\n            db[table][k].writable=False\n\n    form = SQLFORM(db[table], record, deletable=True, delete_label=T(\'Check to delete\'),\n                   ignore_rw=ignore_rw and not keyed,\n                   linkto=URL(\'select\',\n                   args=request.args[:1]), upload=URL(r=request,\n                   f=\'download\', args=request.args[:1]))\n\n    if form.accepts(request.vars, session):\n        session.flash = T(\'done!\')\n        qry = query_by_table_type(table, db)\n        redirect(URL(\'select\', args=request.args[:1],\n                 vars=dict(query=qry)))\n    return dict(form=form,table=db[table])\n\n\n# ##########################################################\n# ## get global variables\n# ###########################################################\n\n\ndef state():\n    return dict()\n\ndef ccache():\n    form = FORM(\n        P(TAG.BUTTON("Clear CACHE?", _type="submit", _name="yes", _value="yes")),\n        P(TAG.BUTTON("Clear RAM", _type="submit", _name="ram", _value="ram")),\n        P(TAG.BUTTON("Clear DISK", _type="submit", _name="disk", _value="disk")),\n    )\n\n    if form.accepts(request.vars, session):\n        clear_ram = False\n        clear_disk = False\n        session.flash = ""\n        if request.vars.yes:\n            clear_ram = clear_disk = True\n        if request.vars.ram:\n            clear_ram = True\n        if request.vars.disk:\n            clear_disk = True\n\n        if clear_ram:\n            cache.ram.clear()\n            session.flash += "Ram Cleared "\n        if clear_disk:\n            cache.disk.clear()\n            session.flash += "Disk Cleared"\n\n        redirect(URL(r=request))\n\n    try:\n        from guppy import hpy; hp=hpy()\n    except ImportError:\n        hp = False\n\n    import shelve, os, copy, time, math\n    from gluon import portalocker\n\n    ram = {\n        \'bytes\': 0,\n        \'objects\': 0,\n        \'hits\': 0,\n        \'misses\': 0,\n        \'ratio\': 0,\n        \'oldest\': time.time()\n    }\n    disk = copy.copy(ram)\n    total = copy.copy(ram)\n\n    for key, value in cache.ram.storage.items():\n        if isinstance(value, dict):\n            ram[\'hits\'] = value[\'hit_total\'] - value[\'misses\']\n            ram[\'misses\'] = value[\'misses\']\n            try:\n                ram[\'ratio\'] = ram[\'hits\'] * 100 / value[\'hit_total\']\n            except (KeyError, ZeroDivisionError):\n                ram[\'ratio\'] = 0\n        else:\n            if hp:\n                ram[\'bytes\'] += hp.iso(value[1]).size\n                ram[\'objects\'] += hp.iso(value[1]).count\n\n                if value[0] < ram[\'oldest\']:\n                    ram[\'oldest\'] = value[0]\n\n    locker = open(os.path.join(request.folder,\n                                        \'cache/cache.lock\'), \'a\')\n    portalocker.lock(locker, portalocker.LOCK_EX)\n    disk_storage = shelve.open(\n        os.path.join(request.folder,\n                \'cache/cache.shelve\'))\n\n    for key, value in disk_storage.items():\n        if isinstance(value, dict):\n            disk[\'hits\'] = value[\'hit_total\'] - value[\'misses\']\n            disk[\'misses\'] = value[\'misses\']\n            try:\n                disk[\'ratio\'] = disk[\'hits\'] * 100 / value[\'hit_total\']\n            except (KeyError, ZeroDivisionError):\n                disk[\'ratio\'] = 0\n        else:\n            if hp:\n                disk[\'bytes\'] += hp.iso(value[1]).size\n                disk[\'objects\'] += hp.iso(value[1]).count\n                if value[0] < disk[\'oldest\']:\n                    disk[\'oldest\'] = value[0]\n\n    portalocker.unlock(locker)\n    locker.close()\n    disk_storage.close()\n\n    total[\'bytes\'] = ram[\'bytes\'] + disk[\'bytes\']\n    total[\'objects\'] = ram[\'objects\'] + disk[\'objects\']\n    total[\'hits\'] = ram[\'hits\'] + disk[\'hits\']\n    total[\'misses\'] = ram[\'misses\'] + disk[\'misses\']\n    try:\n        total[\'ratio\'] = total[\'hits\'] * 100 / (total[\'hits\'] + total[\'misses\'])\n    except (KeyError, ZeroDivisionError):\n        total[\'ratio\'] = 0\n\n    if disk[\'oldest\'] < ram[\'oldest\']:\n        total[\'oldest\'] = disk[\'oldest\']\n    else:\n        total[\'oldest\'] = ram[\'oldest\']\n\n    def GetInHMS(seconds):\n        hours = math.floor(seconds / 3600)\n        seconds -= hours * 3600\n        minutes = math.floor(seconds / 60)\n        seconds -= minutes * 60\n        seconds = math.floor(seconds)\n\n        return (hours, minutes, seconds)\n\n    ram[\'oldest\'] = GetInHMS(time.time() - ram[\'oldest\'])\n    disk[\'oldest\'] = GetInHMS(time.time() - disk[\'oldest\'])\n    total[\'oldest\'] = GetInHMS(time.time() - total[\'oldest\'])\n\n    return dict(form=form, total=total,\n                ram=ram, disk=disk)\n\n\nresponse._vars=response._caller(insert)\n'
+p6
+sS'snapshot'
+p7
+(dp8
+S'exception'
+p9
+(dp10
+S'__module__'
+p11
+S"'sqlite3'"
+p12
+sS'__getslice__'
+p13
+S"<method-wrapper '__getslice__' of IntegrityError object>"
+p14
+sS'__str__'
+p15
+S"<method-wrapper '__str__' of IntegrityError object>"
+p16
+sS'__reduce__'
+p17
+S'<built-in method __reduce__ of IntegrityError object>'
+p18
+sS'__dict__'
+p19
+S'{}'
+p20
+sS'__sizeof__'
+p21
+S'<built-in method __sizeof__ of IntegrityError object>'
+p22
+sS'__weakref__'
+p23
+S'None'
+p24
+sS'__init__'
+p25
+S"<method-wrapper '__init__' of IntegrityError object>"
+p26
+sS'__setattr__'
+p27
+S"<method-wrapper '__setattr__' of IntegrityError object>"
+p28
+sS'__reduce_ex__'
+p29
+S'<built-in method __reduce_ex__ of IntegrityError object>'
+p30
+sS'__new__'
+p31
+S'<built-in method __new__ of type object>'
+p32
+sS'__format__'
+p33
+S'<built-in method __format__ of IntegrityError object>'
+p34
+sS'__class__'
+p35
+S"<class 'sqlite3.IntegrityError'>"
+p36
+sS'__doc__'
+p37
+S'None'
+p38
+sS'__getitem__'
+p39
+S"<method-wrapper '__getitem__' of IntegrityError object>"
+p40
+sS'__setstate__'
+p41
+S'<built-in method __setstate__ of IntegrityError object>'
+p42
+sS'__getattribute__'
+p43
+S"<method-wrapper '__getattribute__' of IntegrityError object>"
+p44
+sS'args'
+p45
+S"('members.uid may not be NULL',)"
+p46
+sS'__subclasshook__'
+p47
+S'<built-in method __subclasshook__ of type object>'
+p48
+sS'__unicode__'
+p49
+S'<built-in method __unicode__ of IntegrityError object>'
+p50
+sS'__delattr__'
+p51
+S"<method-wrapper '__delattr__' of IntegrityError object>"
+p52
+sS'__repr__'
+p53
+S"<method-wrapper '__repr__' of IntegrityError object>"
+p54
+sS'__hash__'
+p55
+S"<method-wrapper '__hash__' of IntegrityError object>"
+p56
+ssS'evalue'
+p57
+S'members.uid may not be NULL'
+p58
+sS'request'
+p59
+(dp60
+S'function'
+p61
+S"'insert'"
+p62
+sS'body'
+p63
+S"<open file '<fdopen>', mode 'w+b'>"
+p64
+sS'wsgi'
+p65
+S"<Storage {'start_response': <function <lambda> a...NFO': '/moderatool/appadmin/insert/db/members'}}>"
+p66
+sS'extension'
+p67
+S"'html'"
+p68
+sS'vars'
+p69
+S"<Storage {'profile': 'http://www.orkut.com.br/Ma...', 'removed': '', '_formname': 'members_create'}>"
+p70
+sS'cid'
+p71
+S'None'
+p72
+sS'url'
+p73
+S'<gluon.html.XML object>'
+p74
+sS'raw_extension'
+p75
+S'None'
+p76
+sg45
+S"['db', 'members']"
+p77
+sS'controller'
+p78
+S"'appadmin'"
+p79
+sS'cookies'
+p80
+S"<SimpleCookie: session_id_admin='127.0.0.1-1ddb3...'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p81
+sS'application'
+p82
+S"'moderatool'"
+p83
+sS'ajax'
+p84
+S'False'
+p85
+sS'client'
+p86
+S"'127.0.0.1'"
+p87
+sS'env'
+p88
+S"<Storage {'content_length': '858', 'http_accept_...info': '/moderatool/appadmin/insert/db/members'}>"
+p89
+sS'raw_args'
+p90
+S"'db/members'"
+p91
+sS'get_vars'
+p92
+S'<Storage {}>'
+p93
+sS'folder'
+p94
+S"'/home/tiago/moderatool/applications/moderatool/'"
+p95
+sS'now'
+p96
+S'datetime.datetime(2011, 1, 7, 23, 5, 22, 280390)'
+p97
+sS'post_vars'
+p98
+S"<Storage {'profile': 'http://www.orkut.com.br/Ma...', 'removed': '', '_formname': 'members_create'}>"
+p99
+ssS'frames'
+p100
+(lp101
+(dp102
+S'file'
+p103
+S'/home/tiago/moderatool/gluon/restricted.py'
+p104
+sS'dump'
+p105
+(dp106
+S'environment'
+p107
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p108
+sS'ccode'
+p109
+S'<code object <module> at 0x9ce0578, file "/home/...ions/moderatool/controllers/appadmin.py", line 7>'
+p110
+ssS'lnum'
+p111
+I188
+sS'lines'
+p112
+(dp113
+I192
+S'        # XXX Show exception in Wing IDE if running in debugger'
+p114
+sI183
+S'        if type(code) == types.CodeType:'
+p115
+sI184
+S'            ccode = code'
+p116
+sI185
+S'        else:'
+p117
+sI186
+S'            ccode = compile2(code,layer)'
+p118
+sI187
+S''
+sI188
+S'        exec ccode in environment'
+p119
+sI189
+S'    except HTTP:'
+p120
+sI190
+S'        raise'
+p121
+sI191
+S'    except Exception:'
+p122
+ssS'call'
+p123
+S"(code='# -*- coding: utf-8 -*-\\n\\n# #####################...=disk)\\n\\n\\nresponse._vars=response._caller(insert)\\n', environment={'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}, layer='/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py')"
+p124
+sS'func'
+p125
+S'restricted'
+p126
+sa(dp127
+g103
+S'/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py'
+p128
+sg105
+(dp129
+sg111
+I410
+sg112
+(dp130
+I399
+S''
+sI400
+S'        return (hours, minutes, seconds)'
+p131
+sI401
+S''
+sI402
+S"    ram['oldest'] = GetInHMS(time.time() - ram['oldest'])"
+p132
+sI403
+S"    disk['oldest'] = GetInHMS(time.time() - disk['oldest'])"
+p133
+sI404
+S"    total['oldest'] = GetInHMS(time.time() - total['oldest'])"
+p134
+sI405
+S''
+sI406
+S'    return dict(form=form, total=total,'
+p135
+sI407
+S'                ram=ram, disk=disk)'
+p136
+sI408
+S''
+ssg123
+S'()'
+p137
+sg125
+S'<module>'
+p138
+sa(dp139
+g103
+S'/home/tiago/moderatool/gluon/globals.py'
+p140
+sg105
+(dp141
+S'self'
+p142
+S'undefined'
+p143
+sS'f'
+S'<function insert>'
+p144
+ssg111
+I95
+sg112
+(dp145
+I96
+S'        self._view_environment = None'
+p146
+sI97
+S'        self._custom_commit = None'
+p147
+sI98
+S'        self._custom_rollback = None'
+p148
+sI99
+S''
+sI90
+S"        self.flash = ''           # used by the default view layout"
+p149
+sI91
+S'        self.meta = Storage()     # used by web2py_ajax.html'
+p150
+sI92
+S'        self.menu = []            # used by the default view layout'
+p151
+sI93
+S'        self.files = []           # used by web2py_ajax.html'
+p152
+sI94
+S'        self._vars = None'
+p153
+sI95
+S'        self._caller = lambda f: f()'
+p154
+ssg123
+S'(f=<function insert>)'
+p155
+sg125
+S'<lambda>'
+p156
+sa(dp157
+g103
+S'/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py'
+p158
+sg105
+(dp159
+S'global request'
+p160
+S"<Storage {'function': 'insert', 'body': <open fi... 'removed': '', '_formname': 'members_create'}>}>"
+p161
+sS'request.vars'
+p162
+S"<Storage {'profile': 'http://www.orkut.com.br/Ma...', 'removed': '', '_formname': 'members_create'}>"
+p163
+sS'global session'
+p164
+S"<Storage {'last_orderby': None, 'last_query': 'd...33b3-3d20-49ef-aa3a-02beb884004b', 'auth': None}>"
+p165
+sS'form'
+p166
+S'<gluon.sqlhtml.SQLFORM object>'
+p167
+sS'form.accepts'
+p168
+S'<bound method SQLFORM.accepts of <gluon.sqlhtml.SQLFORM object>>'
+p169
+ssg111
+I125
+sg112
+(dp170
+I128
+S''
+sI129
+S''
+sI120
+S''
+sI121
+S''
+sI122
+S'def insert():'
+p171
+sI123
+S'    (db, table) = get_table(request)'
+p172
+sI124
+S'    form = SQLFORM(db[table], ignore_rw=ignore_rw)'
+p173
+sI125
+S'    if form.accepts(request.vars, session):'
+p174
+sI126
+S"        response.flash = T('new record inserted')"
+p175
+sI127
+S'    return dict(form=form,table=db[table])'
+p176
+ssg123
+S'()'
+p177
+sg125
+S'insert'
+p178
+sa(dp179
+g103
+S'/home/tiago/moderatool/gluon/sqlhtml.py'
+p180
+sg105
+(dp181
+S'self.vars.id'
+p182
+S'None'
+p183
+sS'fields'
+p184
+S"{'banned': False, 'name': 'Tiago Rosa', 'profile': 'http://www.orkut.com.br/Main#Profile?uid=8815581363479776912&rl=t', 'removed': None, 'warned': None}"
+p185
+sS'self'
+p186
+S'<gluon.sqlhtml.SQLFORM object>'
+p187
+sS'self.vars'
+p188
+S"<Storage {'profile': 'http://www.orkut.com.br/Ma...': False, 'removed': None, 'name': 'Tiago Rosa'}>"
+p189
+sS'self.table.insert'
+p190
+S"<bound method Table.insert of <Table {'profile':...>, 'id': <gluon.dal.Field object at 0x9cc968c>}>>"
+p191
+sS'self.table'
+p192
+S"<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cc968c>}>"
+p193
+ssg111
+I1178
+sg112
+(dp194
+I1173
+S'                if record_id:'
+p195
+sI1174
+S'                    self.vars.id = self.record.id'
+p196
+sI1175
+S'                    if fields:'
+p197
+sI1176
+S'                        self.table._db(self.table.id == self.record.id).update(**fields)'
+p198
+sI1177
+S'                else:'
+p199
+sI1178
+S'                    self.vars.id = self.table.insert(**fields)'
+p200
+sI1179
+S'        return ret'
+p201
+sI1180
+S''
+sI1181
+S'    @staticmethod'
+p202
+sI1182
+S'    def factory(*fields, **attributes):'
+p203
+ssg123
+S"(self=<gluon.sqlhtml.SQLFORM object>, request_vars=<Storage {'profile': 'http://www.orkut.com.br/Ma...', 'removed': '', '_formname': 'members_create'}>, session=<Storage {'last_orderby': None, 'last_query': 'd...33b3-3d20-49ef-aa3a-02beb884004b', 'auth': None}>, formname='members_create', keepvalues=False, onvalidation=None, dbio=True, hideerror=False, detect_record_change=False)"
+p204
+sg125
+S'accepts'
+p205
+sa(dp206
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p207
+sg105
+(dp208
+S'self._listify'
+p209
+S"<bound method Table._listify of <Table {'profile...>, 'id': <gluon.dal.Field object at 0x9cc968c>}>>"
+p210
+sS'fields'
+p211
+S"{'banned': False, 'name': 'Tiago Rosa', 'profile': 'http://www.orkut.com.br/Main#Profile?uid=8815581363479776912&rl=t', 'removed': None, 'warned': None}"
+p212
+sS'self'
+p213
+S"<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cc968c>}>"
+p214
+sS'self._db._adapter'
+p215
+S'<gluon.dal.SQLiteAdapter object>'
+p216
+sS'self._db._adapter.insert'
+p217
+S'<bound method SQLiteAdapter.insert of <gluon.dal.SQLiteAdapter object>>'
+p218
+sS'self._db'
+p219
+S'<DAL {\'_lastsql\': "INSERT INTO members(name,prof...0x9cc968c>}>, \'_migrate\': True, \'_pool_size\': 0}>'
+p220
+ssg111
+I3875
+sg112
+(dp221
+I3872
+S'        return self._db._adapter._insert(self,self._listify(fields))'
+p222
+sI3873
+S''
+sI3874
+S'    def insert(self, **fields):'
+p223
+sI3875
+S'        return self._db._adapter.insert(self,self._listify(fields))'
+p224
+sI3876
+S''
+sI3877
+S'    def bulk_insert(self, items):'
+p225
+sI3878
+S'        """'
+p226
+sI3879
+S'        here items is a list of dictionaries'
+p227
+sI3870
+S''
+sI3871
+S'    def _insert(self, **fields):'
+p228
+ssg123
+S"(self=<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cc968c>}>, **fields={'banned': False, 'name': 'Tiago Rosa', 'profile': 'http://www.orkut.com.br/Main#Profile?uid=8815581363479776912&rl=t', 'removed': None, 'warned': None})"
+p229
+sg125
+g178
+sa(dp230
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p231
+sg105
+(dp232
+S'e'
+S"IntegrityError('members.uid may not be NULL',)"
+p233
+ssg111
+I704
+sg112
+(dp234
+I704
+S'            raise e'
+p235
+sI705
+S"        if hasattr(table,'_primarykey'):"
+p236
+sI706
+S'            return dict( [ (k,fields[k]) for k in table._primarykey ])'
+p237
+sI707
+S'        id = self.lastrowid(table)'
+p238
+sI708
+S'        if not isinstance(id,int):'
+p239
+sI699
+S'        try:'
+p240
+sI700
+S'            self.execute(query)'
+p241
+sI701
+S'        except Exception, e:'
+p242
+sI702
+S'            if isinstance(e,self.integrity_error_class()):'
+p243
+sI703
+S'                return None'
+p244
+ssg123
+S"(self=<gluon.dal.SQLiteAdapter object>, table=<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cc968c>}>, fields=[(<gluon.dal.Field object>, 'Tiago Rosa'), (<gluon.dal.Field object>, 'http://www.orkut.com.br/Main#Profile?uid=8815581363479776912&rl=t'), (<gluon.dal.Field object>, None), (<gluon.dal.Field object>, None), (<gluon.dal.Field object>, False)])"
+p245
+sg125
+g178
+sasS'pyver'
+p246
+S'Python 2.6.5: /usr/bin/python'
+p247
+sS'session'
+p248
+(dp249
+S'last_orderby'
+p250
+S'None'
+p251
+sS'last_query'
+p252
+S"'db.members.id>0'"
+p253
+sS'_formkey[members_create]'
+p254
+S"'038f33b3-3d20-49ef-aa3a-02beb884004b'"
+p255
+sS'auth'
+p256
+S'None'
+p257
+ssS'etype'
+p258
+S"<class 'sqlite3.IntegrityError'>"
+p259
+sS'date'
+p260
+S'Fri Jan  7 23:05:22 2011'
+p261
+sS'response'
+p262
+(dp263
+S'status'
+p264
+S'200'
+p265
+sg63
+S'<cStringIO.StringO object>'
+p266
+sg80
+S"<SimpleCookie: session_id_moderatool='127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p267
+sS'_vars'
+p268
+S'None'
+p269
+sS'title'
+p270
+S"'moderatool'"
+p271
+sS'session_file'
+p272
+S"<open file '/home/tiago/moderatool/applications/...1cfdd1b-db51-43cb-bdf7-c7cc378afb50', mode 'rb+'>"
+p273
+sS'flash'
+p274
+S"''"
+p275
+sS'_custom_rollback'
+p276
+S'None'
+p277
+sS'session_id'
+p278
+S"'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p279
+sS'headers'
+p280
+S"<Storage {'Expires': 'Sat, 08 Jan 2011 01:05:22 ...he, must-revalidate, post-check=0, pre-check=0'}>"
+p281
+sS'meta'
+p282
+S"<Storage {'keywords': 'web2py, python, framework... 'Web2py Enterprise Framework', 'author': 'you'}>"
+p283
+sS'session_filename'
+p284
+S"'/home/tiago/moderatool/applications/moderatool/s...ns/127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p285
+sS'postprocessing'
+p286
+S'[]'
+p287
+sS'menu'
+p288
+S"[[<lazyT 'design'>, False, <gluon.html.XML object>], [<lazyT 'db'>, False, <gluon.html.XML object>], [<lazyT 'state'>, False, <gluon.html.XML object>], [<lazyT 'cache'>, False, <gluon.html.XML object>]]"
+p289
+sS'_view_environment'
+p290
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p291
+sS'subtitle'
+p292
+S"<lazyT 'customize me!'>"
+p293
+sS'session_id_name'
+p294
+S"'session_id_moderatool'"
+p295
+sS'_custom_commit'
+p296
+S'None'
+p297
+sS'_caller'
+p298
+S'<function <lambda>>'
+p299
+sS'files'
+p300
+S'[]'
+p301
+sS'view'
+p302
+S"'appadmin.html'"
+p303
+ssS'locals'
+p304
+(dp305
+S'query'
+p306
+S'"INSERT INTO members(name,profile,warned,removed,...ile?uid=8815581363479776912&rl=t\',NULL,NULL,\'F\');"'
+p307
+sS'self'
+p308
+S'<gluon.dal.SQLiteAdapter object>'
+p309
+sS'e'
+S"IntegrityError('members.uid may not be NULL',)"
+p310
+sS'fields'
+p311
+S"[(<gluon.dal.Field object>, 'Tiago Rosa'), (<gluon.dal.Field object>, 'http://www.orkut.com.br/Main#Profile?uid=8815581363479776912&rl=t'), (<gluon.dal.Field object>, None), (<gluon.dal.Field object>, None), (<gluon.dal.Field object>, False)]"
+p312
+sS'table'
+p313
+S"<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cc968c>}>"
+p314
+sssS'traceback'
+p315
+S'Traceback (most recent call last):\n  File "/home/tiago/moderatool/gluon/restricted.py", line 188, in restricted\n    exec ccode in environment\n  File "/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py", line 410, in <module>\n  File "/home/tiago/moderatool/gluon/globals.py", line 95, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/tiago/moderatool/applications/moderatool/controllers/appadmin.py", line 125, in insert\n    if form.accepts(request.vars, session):\n  File "/home/tiago/moderatool/gluon/sqlhtml.py", line 1178, in accepts\n    self.vars.id = self.table.insert(**fields)\n  File "/home/tiago/moderatool/gluon/dal.py", line 3875, in insert\n    return self._db._adapter.insert(self,self._listify(fields))\n  File "/home/tiago/moderatool/gluon/dal.py", line 704, in insert\n    raise e\nIntegrityError: members.uid may not be NULL\n'
+p316
+s.

@@ -1,0 +1,80 @@
+timestamp: 2011-01-07T22:36:01.822336
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512)
+);
+success!
+timestamp: 2011-01-07T22:36:01.965010
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2011-01-07T22:36:02.071774
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2011-01-07T22:36:02.179514
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2011-01-07T22:36:02.272801
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2011-01-07T22:57:12.030748
+CREATE TABLE members(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512) NOT NULL,
+    uid INTEGER NOT NULL,
+    warned TIMESTAMP,
+    removed TIMESTAMP,
+    banned CHAR(1)
+);
+success!
+timestamp: 2011-01-07T23:01:55.775382
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:02:05.310319
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:02:06.693467
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:02:09.308751
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:02:32.148591
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:02:53.457327
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:03:30.615814
+ALTER TABLE members ADD profile CHAR(512) NOT NULL;
+timestamp: 2011-01-07T23:04:20.536735
+ALTER TABLE members ADD profile CHAR(512);
+timestamp: 2011-01-07T23:09:34.296428
+CREATE TABLE members(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(512) NOT NULL,
+    profile VARCHAR(512) NOT NULL,
+    warned TIMESTAMP,
+    removed TIMESTAMP,
+    banned CHAR(1)
+);
+success!

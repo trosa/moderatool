@@ -1,0 +1,532 @@
+(dp1
+S'output'
+p2
+S''
+sS'layer'
+p3
+S'/home/tiago/moderatool/applications/moderatool/controllers/default.py'
+p4
+sS'code'
+p5
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\n#########################################################################\n## This is a samples controller\n## - index is the default action of any application\n## - user is required for authentication and authorization\n## - download is for downloading files uploaded in the db (does streaming)\n## - call exposes all registered services (none by default)\n#########################################################################\n\nfrom datetime import datetime\n\ndef index():\n    """\n    example action using the internationalization operator T and flash\n    rendered by views/default/index.html or views/generic.html\n    """\n    members = db(Members.id>0).select()\n    form = SQLFORM(Members)\n    if form.accepts(request.vars, session):\n        session.flash = \'Membro adicionado com sucesso!\'\n        redirect(URL(request.application, \'default\', \'index\'))\n    return dict(members=members, form=form)\n\ndef warn():\n    member_id = int(request.vars[\'member_id\'])\n    if Members[member_id].warned:\n        Members[member_id].update(warned=None, removed=datetime.now())\n        member.removed = datetime.now()\n        db.commit()\n        session.flash = \'%s foi advertido novamente. Exclua-o da comunidade!\' % member.name\n    redirect(URL(request.application, \'default\', \'index\'))\n\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n    return dict(form=auth())\n\n\ndef download():\n    """\n    allows downloading of uploaded files\n    http://..../[app]/default/download/[filename]\n    """\n    return response.download(request,db)\n\n\ndef call():\n    """\n    exposes services. for example:\n    http://..../[app]/default/call/jsonrpc\n    decorate with @services.jsonrpc the functions to expose\n    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n    """\n    session.forget()\n    return service()\n\n\n\nresponse._vars=response._caller(warn)\n'
+p6
+sS'snapshot'
+p7
+(dp8
+S'exception'
+p9
+(dp10
+S'__hash__'
+p11
+S"<method-wrapper '__hash__' of exceptions.NameError object>"
+p12
+sS'__setattr__'
+p13
+S"<method-wrapper '__setattr__' of exceptions.NameError object>"
+p14
+sS'__reduce_ex__'
+p15
+S'<built-in method __reduce_ex__ of exceptions.NameError object>'
+p16
+sS'__getslice__'
+p17
+S"<method-wrapper '__getslice__' of exceptions.NameError object>"
+p18
+sS'__getitem__'
+p19
+S"<method-wrapper '__getitem__' of exceptions.NameError object>"
+p20
+sS'__setstate__'
+p21
+S'<built-in method __setstate__ of exceptions.NameError object>'
+p22
+sS'__reduce__'
+p23
+S'<built-in method __reduce__ of exceptions.NameError object>'
+p24
+sS'__str__'
+p25
+S"<method-wrapper '__str__' of exceptions.NameError object>"
+p26
+sS'__format__'
+p27
+S'<built-in method __format__ of exceptions.NameError object>'
+p28
+sS'__getattribute__'
+p29
+S"<method-wrapper '__getattribute__' of exceptions.NameError object>"
+p30
+sS'__class__'
+p31
+S"<type 'exceptions.NameError'>"
+p32
+sS'__unicode__'
+p33
+S'<built-in method __unicode__ of exceptions.NameError object>'
+p34
+sS'__delattr__'
+p35
+S"<method-wrapper '__delattr__' of exceptions.NameError object>"
+p36
+sS'__subclasshook__'
+p37
+S'<built-in method __subclasshook__ of type object>'
+p38
+sS'__repr__'
+p39
+S"<method-wrapper '__repr__' of exceptions.NameError object>"
+p40
+sS'args'
+p41
+S'("global name \'member\' is not defined",)'
+p42
+sS'__dict__'
+p43
+S'{}'
+p44
+sS'__sizeof__'
+p45
+S'<built-in method __sizeof__ of exceptions.NameError object>'
+p46
+sS'__doc__'
+p47
+S"'Name not found globally.'"
+p48
+sS'__init__'
+p49
+S"<method-wrapper '__init__' of exceptions.NameError object>"
+p50
+sS'__new__'
+p51
+S'<built-in method __new__ of type object>'
+p52
+ssS'evalue'
+p53
+S"global name 'member' is not defined"
+p54
+sS'request'
+p55
+(dp56
+S'function'
+p57
+S"'warn'"
+p58
+sS'body'
+p59
+S'<cStringIO.StringO object>'
+p60
+sS'wsgi'
+p61
+S"<Storage {'start_response': <function <lambda> a...late', 'PATH_INFO': '/moderatool/default/warn'}}>"
+p62
+sS'extension'
+p63
+S"'html'"
+p64
+sS'vars'
+p65
+S"<Storage {'member_id': '3'}>"
+p66
+sS'cid'
+p67
+S'None'
+p68
+sS'url'
+p69
+S'<gluon.html.XML object>'
+p70
+sS'raw_extension'
+p71
+S'None'
+p72
+sg41
+S'[]'
+p73
+sS'controller'
+p74
+S"'default'"
+p75
+sS'cookies'
+p76
+S"<SimpleCookie: session_id_admin='127.0.0.1-1ddb3...'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p77
+sS'application'
+p78
+S"'moderatool'"
+p79
+sS'ajax'
+p80
+S'False'
+p81
+sS'client'
+p82
+S"'127.0.0.1'"
+p83
+sS'env'
+p84
+S"<Storage {'wsgi_multithread': True, 'http_accept...51006', 'path_info': '/moderatool/default/warn'}>"
+p85
+sS'raw_args'
+p86
+S'None'
+p87
+sS'get_vars'
+p88
+S"<Storage {'member_id': '3'}>"
+p89
+sS'folder'
+p90
+S"'/home/tiago/moderatool/applications/moderatool/'"
+p91
+sS'now'
+p92
+S'datetime.datetime(2011, 1, 7, 23, 43, 19, 283309)'
+p93
+sS'post_vars'
+p94
+S'<Storage {}>'
+p95
+ssS'frames'
+p96
+(lp97
+(dp98
+S'file'
+p99
+S'/home/tiago/moderatool/gluon/restricted.py'
+p100
+sS'dump'
+p101
+(dp102
+S'environment'
+p103
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p104
+sS'ccode'
+p105
+S'<code object <module> at 0x9f72728, file "/home/...ions/moderatool/controllers/default.py", line 12>'
+p106
+ssS'lnum'
+p107
+I188
+sS'lines'
+p108
+(dp109
+I192
+S'        # XXX Show exception in Wing IDE if running in debugger'
+p110
+sI183
+S'        if type(code) == types.CodeType:'
+p111
+sI184
+S'            ccode = code'
+p112
+sI185
+S'        else:'
+p113
+sI186
+S'            ccode = compile2(code,layer)'
+p114
+sI187
+S''
+sI188
+S'        exec ccode in environment'
+p115
+sI189
+S'    except HTTP:'
+p116
+sI190
+S'        raise'
+p117
+sI191
+S'    except Exception:'
+p118
+ssS'call'
+p119
+S"(code='# -*- coding: utf-8 -*-\\n# this file is released ...rvice()\\n\\n\\n\\nresponse._vars=response._caller(warn)\\n', environment={'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}, layer='/home/tiago/moderatool/applications/moderatool/controllers/default.py')"
+p120
+sS'func'
+p121
+S'restricted'
+p122
+sa(dp123
+g99
+S'/home/tiago/moderatool/applications/moderatool/controllers/default.py'
+p124
+sg101
+(dp125
+sg107
+I72
+sg108
+(dp126
+I64
+S'    decorate with @services.jsonrpc the functions to expose'
+p127
+sI65
+S'    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv'
+p128
+sI66
+S'    """'
+p129
+sI67
+S'    session.forget()'
+p130
+sI68
+S'    return service()'
+p131
+sI69
+S''
+sI70
+S''
+sI61
+S'    """'
+p132
+sI62
+S'    exposes services. for example:'
+p133
+sI63
+S'    http://..../[app]/default/call/jsonrpc'
+p134
+ssg119
+S'()'
+p135
+sg121
+S'<module>'
+p136
+sa(dp137
+g99
+S'/home/tiago/moderatool/gluon/globals.py'
+p138
+sg101
+(dp139
+S'self'
+p140
+S'undefined'
+p141
+sS'f'
+S'<function warn>'
+p142
+ssg107
+I95
+sg108
+(dp143
+I96
+S'        self._view_environment = None'
+p144
+sI97
+S'        self._custom_commit = None'
+p145
+sI98
+S'        self._custom_rollback = None'
+p146
+sI99
+S''
+sI90
+S"        self.flash = ''           # used by the default view layout"
+p147
+sI91
+S'        self.meta = Storage()     # used by web2py_ajax.html'
+p148
+sI92
+S'        self.menu = []            # used by the default view layout'
+p149
+sI93
+S'        self.files = []           # used by web2py_ajax.html'
+p150
+sI94
+S'        self._vars = None'
+p151
+sI95
+S'        self._caller = lambda f: f()'
+p152
+ssg119
+S'(f=<function warn>)'
+p153
+sg121
+S'<lambda>'
+p154
+sa(dp155
+g99
+S'/home/tiago/moderatool/applications/moderatool/controllers/default.py'
+p156
+sg101
+(dp157
+S'member'
+p158
+g141
+sS'datetime.now'
+p159
+S'<built-in method now of type object>'
+p160
+sS'global datetime'
+p161
+S"<type 'datetime.datetime'>"
+p162
+ssg107
+I30
+sg108
+(dp163
+I32
+S"        session.flash = '%s foi advertido novamente. Exclua-o da comunidade!' % member.name"
+p164
+sI33
+S"    redirect(URL(request.application, 'default', 'index'))"
+p165
+sI34
+S''
+sI25
+S''
+sI26
+S'def warn():'
+p166
+sI27
+S"    member_id = int(request.vars['member_id'])"
+p167
+sI28
+S'    if Members[member_id].warned:'
+p168
+sI29
+S'        Members[member_id].update(warned=None, removed=datetime.now())'
+p169
+sI30
+S'        member.removed = datetime.now()'
+p170
+sI31
+S'        db.commit()'
+p171
+ssg119
+S'()'
+p172
+sg121
+S'warn'
+p173
+sasS'pyver'
+p174
+S'Python 2.6.5: /usr/bin/python'
+p175
+sS'session'
+p176
+(dp177
+S'last_orderby'
+p178
+S'None'
+p179
+sS'flash'
+p180
+S'None'
+p181
+sS'last_query'
+p182
+S"'db.members.id>0'"
+p183
+sS'_formkey[members_create]'
+p184
+S"'30a9de23-f208-4f02-a43b-7b127b56fd9a'"
+p185
+sS'auth'
+p186
+S'None'
+p187
+ssS'etype'
+p188
+S"<type 'exceptions.NameError'>"
+p189
+sS'date'
+p190
+S'Fri Jan  7 23:43:19 2011'
+p191
+sS'response'
+p192
+(dp193
+S'status'
+p194
+S'200'
+p195
+sg59
+S'<cStringIO.StringO object>'
+p196
+sg76
+S"<SimpleCookie: session_id_moderatool='127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p197
+sS'_vars'
+p198
+S'None'
+p199
+sS'title'
+p200
+S"'moderatool'"
+p201
+sS'session_file'
+p202
+S"<open file '/home/tiago/moderatool/applications/...1cfdd1b-db51-43cb-bdf7-c7cc378afb50', mode 'rb+'>"
+p203
+sS'flash'
+p204
+S"''"
+p205
+sS'_custom_rollback'
+p206
+S'None'
+p207
+sS'session_id'
+p208
+S"'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p209
+sS'headers'
+p210
+S"<Storage {'Expires': 'Sat, 08 Jan 2011 01:43:19 ...he, must-revalidate, post-check=0, pre-check=0'}>"
+p211
+sS'meta'
+p212
+S"<Storage {'keywords': 'web2py, python, framework... 'Web2py Enterprise Framework', 'author': 'you'}>"
+p213
+sS'session_filename'
+p214
+S"'/home/tiago/moderatool/applications/moderatool/s...ns/127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p215
+sS'postprocessing'
+p216
+S'[]'
+p217
+sS'menu'
+p218
+S"[(<lazyT 'Home'>, False, <gluon.html.XML object>, []), (<lazyT 'This App'>, False, <gluon.html.XML object>, [(<lazyT 'Controller'>, False, <gluon.html.XML object>), (<lazyT 'View'>, False, <gluon.html.XML object>), (<lazyT 'Layout'>, False, <gluon.html.XML object>), (<lazyT 'Stylesheet'>, False, <gluon.html.XML object>), (<lazyT 'DB Model'>, False, <gluon.html.XML object>), (<lazyT 'Menu Model'>, False, <gluon.html.XML object>), (<lazyT 'Database'>, False, <gluon.html.XML object>), (<lazyT 'Errors'>, False, <gluon.html.XML object>), (<lazyT 'About'>, False, <gluon.html.XML object>)]), (<lazyT 'Resources'>, False, None, [(<lazyT 'Documentation'>, False, 'http://www.web2py.com/book', [(<lazyT 'Preface'>, False, 'http://www.web2py.com/book/default/chapter/00'), (<lazyT 'Introduction'>, False, 'http://www.web2py.com/book/default/chapter/01'), (<lazyT 'Python'>, False, 'http://www.web2py.com/book/default/chapter/02'), (<lazyT 'Overview'>, False, 'http://www.web2py.com/book/default/chapter/03'), (<lazyT 'The Core'>, False, 'http://www.web2py.com/book/default/chapter/04'), (<lazyT 'The Views'>, False, 'http://www.web2py.com/book/default/chapter/05'), (<lazyT 'Database'>, False, 'http://www.web2py.com/book/default/chapter/06'), (<lazyT 'Forms and Validators'>, False, 'http://www.web2py.com/book/default/chapter/07'), (<lazyT 'Access Control'>, False, 'http://www.web2py.com/book/default/chapter/08'), (<lazyT 'Services'>, False, 'http://www.web2py.com/book/default/chapter/09'), (<lazyT 'Ajax Recipes'>, False, 'http://www.web2py.com/book/default/chapter/10'), (<lazyT 'Deployment Recipes'>, False, 'http://www.web2py.com/book/default/chapter/11'), (<lazyT 'Other Recipes'>, False, 'http://www.web2py.com/book/default/chapter/12'), (<lazyT 'Buy this book'>, False, 'http://stores.lulu.com/web2py')]), (<lazyT 'Community'>, False, None, [(<lazyT 'Groups'>, False, 'http://www.web2py.com/examples/default/usergroups'), (<lazyT 'Twitter'>, False, 'http://twitter.com/web2py'), (<lazyT 'Live chat'>, False, 'http://mibbit.com/?channel=%23web2py&server=irc.mibbit.net'), (<lazyT 'User Voice'>, False, 'http://web2py.uservoice.com/')]), (<lazyT 'Web2py'>, False, 'http://www.web2py.com', [(<lazyT 'Download'>, False, 'http://www.web2py.com/examples/default/download'), (<lazyT 'Support'>, False, 'http://www.web2py.com/examples/default/support'), (<lazyT 'Quick Examples'>, False, 'http://web2py.com/examples/default/examples'), (<lazyT 'FAQ'>, False, 'http://web2py.com/AlterEgo'), (<lazyT 'Free Applications'>, False, 'http://web2py.com/appliances'), (<lazyT 'Plugins'>, False, 'http://web2py.com/plugins'), (<lazyT 'Recipes'>, False, 'http://web2pyslices.com/'), (<lazyT 'Demo'>, False, 'http://web2py.com/demo_admin'), (<lazyT 'Semantic'>, False, 'http://web2py.com/semantic'), (<lazyT 'Layouts'>, False, 'http://web2py.com/layouts'), (<lazyT 'Videos'>, False, 'http://www.web2py.com/examples/default/videos/')])])]"
+p219
+sS'_view_environment'
+p220
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p221
+sS'subtitle'
+p222
+S"<lazyT 'customize me!'>"
+p223
+sS'session_id_name'
+p224
+S"'session_id_moderatool'"
+p225
+sS'_custom_commit'
+p226
+S'None'
+p227
+sS'_caller'
+p228
+S'<function <lambda>>'
+p229
+sS'files'
+p230
+S'[]'
+p231
+sS'view'
+p232
+S"'default/warn.html'"
+p233
+ssS'locals'
+p234
+(dp235
+S'member_id'
+p236
+S'3'
+sssS'traceback'
+p237
+S'Traceback (most recent call last):\n  File "/home/tiago/moderatool/gluon/restricted.py", line 188, in restricted\n    exec ccode in environment\n  File "/home/tiago/moderatool/applications/moderatool/controllers/default.py", line 72, in <module>\n  File "/home/tiago/moderatool/gluon/globals.py", line 95, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/tiago/moderatool/applications/moderatool/controllers/default.py", line 30, in warn\n    member.removed = datetime.now()\nNameError: global name \'member\' is not defined\n'
+p238
+s.

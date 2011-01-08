@@ -1,0 +1,34 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'layout.html'}}
+
+<h1>Moderatool</h1>
+
+<table>
+    <th>Nome</th>
+    <th>Perfil</th>
+    <th>Advertências</th>
+    <th>Exclusões</th>
+    <th>Status</th>
+    <th>Ações</th>
+
+{{for member in members:}}
+    <tr>
+        <td>{{=member.name}}</td>
+        <td>{{=A(filter(type(member.profile).isdigit, member.profile), _href=member.profile)}}</td>
+        <td>{{='1' if member.warned else ''}}</td>
+        <td>{{='1' if member.removed else ''}}</td>
+        <td>{{='BANIDO' if member.banned else 'primeira advertência' if member.warned else 'primeira remoção' if member.removed else ''}}</td>
+        <td>{{=A('advertir', _href=URL(request.application, 'default', 'warn', vars=dict(member_id=member.id))) if not member.banned else ''}}</td>
+    </tr>
+{{pass}}
+
+</table>
+
+<br/>
+
+<h3>Adicionar usuário</h3>
+
+{{=form}}
+
+{{block left_sidebar}}New Left Sidebar Content{{end}}
+{{block right_sidebar}}New Right Sidebar Content{{end}}

@@ -1,0 +1,30 @@
+(dp1
+S'profile'
+p2
+S'CHAR(512)'
+p3
+sS'uid'
+p4
+S'INTEGER NOT NULL'
+p5
+sS'warned'
+p6
+S'TIMESTAMP'
+p7
+sS'banned'
+p8
+S'CHAR(1)'
+p9
+sS'removed'
+p10
+S'TIMESTAMP'
+p11
+sS'id'
+p12
+S'INTEGER PRIMARY KEY AUTOINCREMENT'
+p13
+sS'name'
+p14
+S'CHAR(512) NOT NULL'
+p15
+s.

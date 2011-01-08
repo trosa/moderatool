@@ -1,0 +1,478 @@
+(dp1
+S'output'
+p2
+S''
+sS'layer'
+p3
+S'/home/tiago/moderatool/applications/moderatool/controllers/default.py'
+p4
+sS'code'
+p5
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\n#########################################################################\n## This is a samples controller\n## - index is the default action of any application\n## - user is required for authentication and authorization\n## - download is for downloading files uploaded in the db (does streaming)\n## - call exposes all registered services (none by default)\n#########################################################################\n\nfrom datetime import datetime\n\ndef index():\n    """\n    example action using the internationalization operator T and flash\n    rendered by views/default/index.html or views/generic.html\n    """\n    members = db(Members.id>0).select(orderby=Members.warned)\n    for member in members:\n        if member.warned:\n            delta = datetime.now() - member.warned\n            id delta.days >= 90:\n                db(Members.id==member.id).delete()\n                db.commit()\n    form = SQLFORM(Members)\n    if form.accepts(request.vars, session):\n        session.flash = \'Membro adicionado com sucesso!\'\n        redirect(URL(request.application, \'default\', \'index\'))\n    return dict(members=members, form=form)\n\ndef warn():\n    member_id = int(request.vars[\'member_id\'])\n    member = Members[member_id]\n    if member.warned:\n        if member.removed:\n            db(Members.id==member_id).update(banned=True)\n            db.commit()\n            session.flash = \'%s DEVE SER BANIDO DA COMUNIDADE!\'\n        else:\n            db(Members.id==member_id).update(warned=None, removed=datetime.now())\n            db.commit()\n            session.flash = \'%s foi advertido novamente. Exclua-o da comunidade!\' % member.name\n    else:\n        db(Members.id==member_id).update(warned=datetime.now())\n        db.commit()\n        session.flash = \'%s foi advertido. Olho nele(a)!\' % member.name\n    redirect(URL(request.application, \'default\', \'index\'))\n\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n    return dict(form=auth())\n\n\ndef download():\n    """\n    allows downloading of uploaded files\n    http://..../[app]/default/download/[filename]\n    """\n    return response.download(request,db)\n\n\ndef call():\n    """\n    exposes services. for example:\n    http://..../[app]/default/call/jsonrpc\n    decorate with @services.jsonrpc the functions to expose\n    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n    """\n    session.forget()\n    return service()\n\n\n\nresponse._vars=response._caller(index)\n'
+p6
+sS'snapshot'
+p7
+(dp8
+S'exception'
+p9
+(dp10
+S'__getslice__'
+p11
+S"<method-wrapper '__getslice__' of exceptions.SyntaxError object>"
+p12
+sS'text'
+p13
+S"'            id delta.days >= 90:\\n'"
+p14
+sS'__str__'
+p15
+S"<method-wrapper '__str__' of exceptions.SyntaxError object>"
+p16
+sS'__reduce__'
+p17
+S'<built-in method __reduce__ of exceptions.SyntaxError object>'
+p18
+sS'__dict__'
+p19
+S'{}'
+p20
+sS'__sizeof__'
+p21
+S'<built-in method __sizeof__ of exceptions.SyntaxError object>'
+p22
+sS'__init__'
+p23
+S"<method-wrapper '__init__' of exceptions.SyntaxError object>"
+p24
+sS'__setattr__'
+p25
+S"<method-wrapper '__setattr__' of exceptions.SyntaxError object>"
+p26
+sS'__reduce_ex__'
+p27
+S'<built-in method __reduce_ex__ of exceptions.SyntaxError object>'
+p28
+sS'__new__'
+p29
+S'<built-in method __new__ of type object>'
+p30
+sS'__format__'
+p31
+S'<built-in method __format__ of exceptions.SyntaxError object>'
+p32
+sS'__class__'
+p33
+S"<type 'exceptions.SyntaxError'>"
+p34
+sS'filename'
+p35
+S"'/home/tiago/moderatool/applications/moderatool/controllers/default.py'"
+p36
+sS'lineno'
+p37
+S'23'
+p38
+sS'msg'
+p39
+S"'invalid syntax'"
+p40
+sS'__doc__'
+p41
+S"'Invalid syntax.'"
+p42
+sS'__getitem__'
+p43
+S"<method-wrapper '__getitem__' of exceptions.SyntaxError object>"
+p44
+sS'__setstate__'
+p45
+S'<built-in method __setstate__ of exceptions.SyntaxError object>'
+p46
+sS'__getattribute__'
+p47
+S"<method-wrapper '__getattribute__' of exceptions.SyntaxError object>"
+p48
+sS'print_file_and_line'
+p49
+S'None'
+p50
+sS'args'
+p51
+S"('invalid syntax', ('/home/tiago/moderatool/applications/moderatool/controllers/default.py', 23, 20, '            id delta.days >= 90:\\n'))"
+p52
+sS'__subclasshook__'
+p53
+S'<built-in method __subclasshook__ of type object>'
+p54
+sS'offset'
+p55
+S'20'
+p56
+sS'__unicode__'
+p57
+S'<built-in method __unicode__ of exceptions.SyntaxError object>'
+p58
+sS'__delattr__'
+p59
+S"<method-wrapper '__delattr__' of exceptions.SyntaxError object>"
+p60
+sS'__repr__'
+p61
+S"<method-wrapper '__repr__' of exceptions.SyntaxError object>"
+p62
+sS'__hash__'
+p63
+S"<method-wrapper '__hash__' of exceptions.SyntaxError object>"
+p64
+ssS'evalue'
+p65
+S'invalid syntax (default.py, line 23)'
+p66
+sS'request'
+p67
+(dp68
+S'function'
+p69
+S"'index'"
+p70
+sS'body'
+p71
+S'<cStringIO.StringO object>'
+p72
+sS'wsgi'
+p73
+S"<Storage {'start_response': <function <lambda> a...ate', 'PATH_INFO': '/moderatool/default/index'}}>"
+p74
+sS'extension'
+p75
+S"'html'"
+p76
+sS'vars'
+p77
+S'<Storage {}>'
+p78
+sS'cid'
+p79
+S'None'
+p80
+sS'url'
+p81
+S'<gluon.html.XML object>'
+p82
+sS'raw_extension'
+p83
+S'None'
+p84
+sg51
+S'[]'
+p85
+sS'controller'
+p86
+S"'default'"
+p87
+sS'cookies'
+p88
+S"<SimpleCookie: session_id_admin='127.0.0.1-1ddb3...'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p89
+sS'application'
+p90
+S"'moderatool'"
+p91
+sS'ajax'
+p92
+S'False'
+p93
+sS'client'
+p94
+S"'127.0.0.1'"
+p95
+sS'env'
+p96
+S"<Storage {'wsgi_multithread': True, 'http_accept...6419', 'path_info': '/moderatool/default/index'}>"
+p97
+sS'raw_args'
+p98
+S'None'
+p99
+sS'get_vars'
+p100
+S'<Storage {}>'
+p101
+sS'folder'
+p102
+S"'/home/tiago/moderatool/applications/moderatool/'"
+p103
+sS'now'
+p104
+S'datetime.datetime(2011, 1, 7, 23, 59, 17, 571463)'
+p105
+sS'post_vars'
+p106
+S'<Storage {}>'
+p107
+ssS'frames'
+p108
+(lp109
+(dp110
+S'file'
+p111
+S'/home/tiago/moderatool/gluon/restricted.py'
+p112
+sS'dump'
+p113
+(dp114
+S'code'
+p115
+S"'# -*- coding: utf-8 -*-\\n# this file is released ...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n'"
+p116
+sS'layer'
+p117
+S"'/home/tiago/moderatool/applications/moderatool/controllers/default.py'"
+p118
+sS'global compile2'
+p119
+S'<function compile2>'
+p120
+sS'ccode'
+p121
+S'undefined'
+p122
+ssS'lnum'
+p123
+I186
+sS'lines'
+p124
+(dp125
+I181
+S''
+sI182
+S'    try:'
+p126
+sI183
+S'        if type(code) == types.CodeType:'
+p127
+sI184
+S'            ccode = code'
+p128
+sI185
+S'        else:'
+p129
+sI186
+S'            ccode = compile2(code,layer)'
+p130
+sI187
+S''
+sI188
+S'        exec ccode in environment'
+p131
+sI189
+S'    except HTTP:'
+p132
+sI190
+S'        raise'
+p133
+ssS'call'
+p134
+S"(code='# -*- coding: utf-8 -*-\\n# this file is released ...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n', environment={'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}, layer='/home/tiago/moderatool/applications/moderatool/controllers/default.py')"
+p135
+sS'func'
+p136
+S'restricted'
+p137
+sa(dp138
+g111
+S'/home/tiago/moderatool/gluon/restricted.py'
+p139
+sg113
+(dp140
+S'builtincompile'
+p141
+S'<built-in function compile>'
+p142
+sS'code'
+p143
+S"'# -*- coding: utf-8 -*-\\n# this file is released ...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n'"
+p144
+sS'code.rstrip'
+p145
+S'<built-in method rstrip of str object>'
+p146
+sS').replace'
+p147
+g122
+sS'layer'
+p148
+S"'/home/tiago/moderatool/applications/moderatool/controllers/default.py'"
+p149
+ssg123
+I173
+sg124
+(dp150
+I168
+S''
+sI169
+S'def compile2(code,layer):'
+p151
+sI170
+S'    """'
+p152
+sI171
+S"    The +'\\n' is necessary else compile fails when code ends in a comment."
+p153
+sI172
+S'    """'
+p154
+sI173
+S"    return compile(code.rstrip().replace('\\r\\n','\\n')+'\\n', layer, 'exec')"
+p155
+sI174
+S''
+sI175
+S"def restricted(code, environment={}, layer='Unknown'):"
+p156
+sI176
+S'    """'
+p157
+sI177
+S'    runs code in environment and returns the output. if an exception occurs'
+p158
+ssg134
+S"(code='# -*- coding: utf-8 -*-\\n# this file is released ...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n', layer='/home/tiago/moderatool/applications/moderatool/controllers/default.py')"
+p159
+sg136
+S'compile2'
+p160
+sasS'pyver'
+p161
+S'Python 2.6.5: /usr/bin/python'
+p162
+sS'session'
+p163
+(dp164
+S'last_orderby'
+p165
+S'None'
+p166
+sS'flash'
+p167
+S'None'
+p168
+sS'auth'
+p169
+S'None'
+p170
+sS'_formkey[members_create]'
+p171
+S"'5fe6c146-4476-4124-8c12-ec786561f6d6'"
+p172
+sS'last_query'
+p173
+S"'db.members.id>0'"
+p174
+ssS'etype'
+p175
+S"<type 'exceptions.SyntaxError'>"
+p176
+sS'date'
+p177
+S'Fri Jan  7 23:59:17 2011'
+p178
+sS'response'
+p179
+(dp180
+S'status'
+p181
+S'200'
+p182
+sg71
+S'<cStringIO.StringO object>'
+p183
+sg88
+S"<SimpleCookie: session_id_moderatool='127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'>"
+p184
+sS'_vars'
+p185
+S'None'
+p186
+sS'title'
+p187
+S"'moderatool'"
+p188
+sS'session_file'
+p189
+S"<open file '/home/tiago/moderatool/applications/...1cfdd1b-db51-43cb-bdf7-c7cc378afb50', mode 'rb+'>"
+p190
+sS'flash'
+p191
+S"''"
+p192
+sS'_custom_rollback'
+p193
+S'None'
+p194
+sS'session_id'
+p195
+S"'127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p196
+sS'headers'
+p197
+S"<Storage {'Expires': 'Sat, 08 Jan 2011 01:59:17 ...he, must-revalidate, post-check=0, pre-check=0'}>"
+p198
+sS'meta'
+p199
+S"<Storage {'keywords': 'web2py, python, framework... 'Web2py Enterprise Framework', 'author': 'you'}>"
+p200
+sS'session_filename'
+p201
+S"'/home/tiago/moderatool/applications/moderatool/s...ns/127.0.0.1-21cfdd1b-db51-43cb-bdf7-c7cc378afb50'"
+p202
+sS'postprocessing'
+p203
+S'[]'
+p204
+sS'menu'
+p205
+S"[(<lazyT 'Home'>, False, <gluon.html.XML object>, []), (<lazyT 'This App'>, False, <gluon.html.XML object>, [(<lazyT 'Controller'>, False, <gluon.html.XML object>), (<lazyT 'View'>, False, <gluon.html.XML object>), (<lazyT 'Layout'>, False, <gluon.html.XML object>), (<lazyT 'Stylesheet'>, False, <gluon.html.XML object>), (<lazyT 'DB Model'>, False, <gluon.html.XML object>), (<lazyT 'Menu Model'>, False, <gluon.html.XML object>), (<lazyT 'Database'>, False, <gluon.html.XML object>), (<lazyT 'Errors'>, False, <gluon.html.XML object>), (<lazyT 'About'>, False, <gluon.html.XML object>)]), (<lazyT 'Resources'>, False, None, [(<lazyT 'Documentation'>, False, 'http://www.web2py.com/book', [(<lazyT 'Preface'>, False, 'http://www.web2py.com/book/default/chapter/00'), (<lazyT 'Introduction'>, False, 'http://www.web2py.com/book/default/chapter/01'), (<lazyT 'Python'>, False, 'http://www.web2py.com/book/default/chapter/02'), (<lazyT 'Overview'>, False, 'http://www.web2py.com/book/default/chapter/03'), (<lazyT 'The Core'>, False, 'http://www.web2py.com/book/default/chapter/04'), (<lazyT 'The Views'>, False, 'http://www.web2py.com/book/default/chapter/05'), (<lazyT 'Database'>, False, 'http://www.web2py.com/book/default/chapter/06'), (<lazyT 'Forms and Validators'>, False, 'http://www.web2py.com/book/default/chapter/07'), (<lazyT 'Access Control'>, False, 'http://www.web2py.com/book/default/chapter/08'), (<lazyT 'Services'>, False, 'http://www.web2py.com/book/default/chapter/09'), (<lazyT 'Ajax Recipes'>, False, 'http://www.web2py.com/book/default/chapter/10'), (<lazyT 'Deployment Recipes'>, False, 'http://www.web2py.com/book/default/chapter/11'), (<lazyT 'Other Recipes'>, False, 'http://www.web2py.com/book/default/chapter/12'), (<lazyT 'Buy this book'>, False, 'http://stores.lulu.com/web2py')]), (<lazyT 'Community'>, False, None, [(<lazyT 'Groups'>, False, 'http://www.web2py.com/examples/default/usergroups'), (<lazyT 'Twitter'>, False, 'http://twitter.com/web2py'), (<lazyT 'Live chat'>, False, 'http://mibbit.com/?channel=%23web2py&server=irc.mibbit.net'), (<lazyT 'User Voice'>, False, 'http://web2py.uservoice.com/')]), (<lazyT 'Web2py'>, False, 'http://www.web2py.com', [(<lazyT 'Download'>, False, 'http://www.web2py.com/examples/default/download'), (<lazyT 'Support'>, False, 'http://www.web2py.com/examples/default/support'), (<lazyT 'Quick Examples'>, False, 'http://web2py.com/examples/default/examples'), (<lazyT 'FAQ'>, False, 'http://web2py.com/AlterEgo'), (<lazyT 'Free Applications'>, False, 'http://web2py.com/appliances'), (<lazyT 'Plugins'>, False, 'http://web2py.com/plugins'), (<lazyT 'Recipes'>, False, 'http://web2pyslices.com/'), (<lazyT 'Demo'>, False, 'http://web2py.com/demo_admin'), (<lazyT 'Semantic'>, False, 'http://web2py.com/semantic'), (<lazyT 'Layouts'>, False, 'http://web2py.com/layouts'), (<lazyT 'Videos'>, False, 'http://www.web2py.com/examples/default/videos/')])])]"
+p206
+sS'_view_environment'
+p207
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p208
+sS'subtitle'
+p209
+S"<lazyT 'customize me!'>"
+p210
+sS'session_id_name'
+p211
+S"'session_id_moderatool'"
+p212
+sS'_custom_commit'
+p213
+S'None'
+p214
+sS'_caller'
+p215
+S'<function <lambda>>'
+p216
+sS'files'
+p217
+S'[]'
+p218
+sS'view'
+p219
+S"'default/index.html'"
+p220
+ssS'locals'
+p221
+(dp222
+g3
+S"'/home/tiago/moderatool/applications/moderatool/controllers/default.py'"
+p223
+sg5
+S"'# -*- coding: utf-8 -*-\\n# this file is released ...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n'"
+p224
+sssS'traceback'
+p225
+S'Traceback (most recent call last):\n  File "/home/tiago/moderatool/gluon/restricted.py", line 186, in restricted\n    ccode = compile2(code,layer)\n  File "/home/tiago/moderatool/gluon/restricted.py", line 173, in compile2\n    return compile(code.rstrip().replace(\'\\r\\n\',\'\\n\')+\'\\n\', layer, \'exec\')\n  File "/home/tiago/moderatool/applications/moderatool/controllers/default.py", line 23\n    id delta.days >= 90:\n           ^\nSyntaxError: invalid syntax\n'
+p226
+s.

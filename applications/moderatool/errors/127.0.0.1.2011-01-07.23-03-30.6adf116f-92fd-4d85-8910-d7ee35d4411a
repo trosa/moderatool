@@ -1,0 +1,707 @@
+(dp1
+S'output'
+p2
+S''
+sS'layer'
+p3
+S'/home/tiago/moderatool/applications/moderatool/models/models.py'
+p4
+sS'code'
+p5
+S"if request.env.web2py_runtime_gae:            # if running on Google App Engine\n    db = DAL('gae://mynamespace')             # connect to Google BigTable\n    session.connect(request, response, db = db) # and store sessions and tickets there\n    ### or use the following lines to store sessions in Memcache\n    # from gluon.contrib.memdb import MEMDB\n    # from google.appengine.api.memcache import Client\n    # session.connect(request, response, db = MEMDB(Client()))\nelse:                                         # else use a normal relational database\n    db = DAL('sqlite://storage.sqlite')       # if not, use SQLite or other DB\n## if no need for session\n# session.forget()\n\nMembers = db.define_table(\n        'members',\n        Field('name',    'string', required=True, notnull=True),\n        Field('profile', 'string', required=True, notnull=True),\n        Field('warned',  'datetime', writable=False),\n        Field('removed', 'datetime', writable=False),\n        Field('banned',  'boolean', writable=False))\n\n"
+p6
+sS'snapshot'
+p7
+(dp8
+S'exception'
+p9
+(dp10
+S'__module__'
+p11
+S"'sqlite3'"
+p12
+sS'__getslice__'
+p13
+S"<method-wrapper '__getslice__' of OperationalError object>"
+p14
+sS'__str__'
+p15
+S"<method-wrapper '__str__' of OperationalError object>"
+p16
+sS'__reduce__'
+p17
+S'<built-in method __reduce__ of OperationalError object>'
+p18
+sS'__dict__'
+p19
+S'{}'
+p20
+sS'__sizeof__'
+p21
+S'<built-in method __sizeof__ of OperationalError object>'
+p22
+sS'__weakref__'
+p23
+S'None'
+p24
+sS'__init__'
+p25
+S"<method-wrapper '__init__' of OperationalError object>"
+p26
+sS'__setattr__'
+p27
+S"<method-wrapper '__setattr__' of OperationalError object>"
+p28
+sS'__reduce_ex__'
+p29
+S'<built-in method __reduce_ex__ of OperationalError object>'
+p30
+sS'__new__'
+p31
+S'<built-in method __new__ of type object>'
+p32
+sS'__format__'
+p33
+S'<built-in method __format__ of OperationalError object>'
+p34
+sS'__class__'
+p35
+S"<class 'sqlite3.OperationalError'>"
+p36
+sS'__doc__'
+p37
+S'None'
+p38
+sS'__getitem__'
+p39
+S"<method-wrapper '__getitem__' of OperationalError object>"
+p40
+sS'__setstate__'
+p41
+S'<built-in method __setstate__ of OperationalError object>'
+p42
+sS'__getattribute__'
+p43
+S"<method-wrapper '__getattribute__' of OperationalError object>"
+p44
+sS'args'
+p45
+S"('Cannot add a NOT NULL column with default value NULL',)"
+p46
+sS'__subclasshook__'
+p47
+S'<built-in method __subclasshook__ of type object>'
+p48
+sS'__unicode__'
+p49
+S'<built-in method __unicode__ of OperationalError object>'
+p50
+sS'__delattr__'
+p51
+S"<method-wrapper '__delattr__' of OperationalError object>"
+p52
+sS'__repr__'
+p53
+S"<method-wrapper '__repr__' of OperationalError object>"
+p54
+sS'__hash__'
+p55
+S"<method-wrapper '__hash__' of OperationalError object>"
+p56
+ssS'evalue'
+p57
+S'Cannot add a NOT NULL column with default value NULL'
+p58
+sS'request'
+p59
+(dp60
+S'function'
+p61
+S"'index'"
+p62
+sS'body'
+p63
+S'<cStringIO.StringO object>'
+p64
+sS'wsgi'
+p65
+S"<Storage {'start_response': <function <lambda> a...te', 'PATH_INFO': '/moderatool/appadmin/index'}}>"
+p66
+sS'extension'
+p67
+S"'html'"
+p68
+sS'vars'
+p69
+S'<Storage {}>'
+p70
+sS'cid'
+p71
+S'None'
+p72
+sS'url'
+p73
+S'<gluon.html.XML object>'
+p74
+sS'raw_extension'
+p75
+S'None'
+p76
+sg45
+S'[]'
+p77
+sS'controller'
+p78
+S"'appadmin'"
+p79
+sS'cookies'
+p80
+S"<SimpleCookie: session_id_admin='127.0.0.1-1ddb3...'127.0.0.1-6d158e42-59d8-4a66-8f00-c385a8ab3377'>"
+p81
+sS'application'
+p82
+S"'moderatool'"
+p83
+sS'ajax'
+p84
+S'False'
+p85
+sS'client'
+p86
+S"'127.0.0.1'"
+p87
+sS'env'
+p88
+S"<Storage {'wsgi_multithread': True, 'http_accept...029', 'path_info': '/moderatool/appadmin/index'}>"
+p89
+sS'raw_args'
+p90
+S'None'
+p91
+sS'get_vars'
+p92
+S'<Storage {}>'
+p93
+sS'folder'
+p94
+S"'/home/tiago/moderatool/applications/moderatool/'"
+p95
+sS'now'
+p96
+S'datetime.datetime(2011, 1, 7, 23, 3, 30, 593604)'
+p97
+sS'post_vars'
+p98
+S'<Storage {}>'
+p99
+ssS'frames'
+p100
+(lp101
+(dp102
+S'file'
+p103
+S'/home/tiago/moderatool/gluon/restricted.py'
+p104
+sS'dump'
+p105
+(dp106
+S'environment'
+p107
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, ...}"
+p108
+sS'ccode'
+p109
+S'<code object <module> at 0x9d1f530, file "/home/...pplications/moderatool/models/models.py", line 1>'
+p110
+ssS'lnum'
+p111
+I188
+sS'lines'
+p112
+(dp113
+I192
+S'        # XXX Show exception in Wing IDE if running in debugger'
+p114
+sI183
+S'        if type(code) == types.CodeType:'
+p115
+sI184
+S'            ccode = code'
+p116
+sI185
+S'        else:'
+p117
+sI186
+S'            ccode = compile2(code,layer)'
+p118
+sI187
+S''
+sI188
+S'        exec ccode in environment'
+p119
+sI189
+S'    except HTTP:'
+p120
+sI190
+S'        raise'
+p121
+sI191
+S'    except Exception:'
+p122
+ssS'call'
+p123
+S'(code="if request.env.web2py_runtime_gae:            # ...   Field(\'banned\',  \'boolean\', writable=False))\\n\\n", environment={\'A\': <class \'gluon.html.A\'>, \'Auth\': <class \'gluon.tools.Auth\'>, \'B\': <class \'gluon.html.B\'>, \'BEAUTIFY\': <class \'gluon.html.BEAUTIFY\'>, \'BODY\': <class \'gluon.html.BODY\'>, \'BR\': <class \'gluon.html.BR\'>, \'CENTER\': <class \'gluon.html.CENTER\'>, \'CLEANUP\': <class \'gluon.validators.CLEANUP\'>, \'CODE\': <class \'gluon.html.CODE\'>, \'CRYPT\': <class \'gluon.validators.CRYPT\'>, ...}, layer=\'/home/tiago/moderatool/applications/moderatool/models/models.py\')'
+p124
+sS'func'
+p125
+S'restricted'
+p126
+sa(dp127
+g103
+S'/home/tiago/moderatool/applications/moderatool/models/models.py'
+p128
+sg105
+(dp129
+S'writable'
+p130
+S'undefined'
+p131
+sS'Field'
+p132
+S"<class 'gluon.dal.Field'>"
+p133
+sS'builtinFalse'
+p134
+g85
+ssg111
+I19
+sg112
+(dp135
+I11
+S'# session.forget()'
+p136
+sI12
+S''
+sI13
+S'Members = db.define_table('
+p137
+sI14
+S"        'members',"
+p138
+sI15
+S"        Field('name',    'string', required=True, notnull=True),"
+p139
+sI16
+S"        Field('profile', 'string', required=True, notnull=True),"
+p140
+sI17
+S"        Field('warned',  'datetime', writable=False),"
+p141
+sI18
+S"        Field('removed', 'datetime', writable=False),"
+p142
+sI19
+S"        Field('banned',  'boolean', writable=False))"
+p143
+sI20
+S''
+ssg123
+S'()'
+p144
+sg125
+S'<module>'
+p145
+sa(dp146
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p147
+sg105
+(dp148
+S'polymodel'
+p149
+S'None'
+p150
+ssg111
+I3431
+sg112
+(dp151
+I3426
+S"        if migrate or self._uri.startswith('gae'):"
+p152
+sI3427
+S'            try:'
+p153
+sI3428
+S'                sql_locker.acquire()'
+p154
+sI3429
+S'                self._adapter.create_table(t,migrate=migrate,'
+p155
+sI3430
+S'                                           fake_migrate=fake_migrate,'
+p156
+sI3431
+S'                                           polymodel=polymodel)'
+p157
+sI3432
+S'            finally:'
+p158
+sI3433
+S'                sql_locker.release()'
+p159
+sI3434
+S'        else:'
+p160
+sI3435
+S'            t._dbt = None'
+p161
+ssg123
+S"(self=<DAL {'_lastsql': 'ALTER TABLE members ADD profi...0x9cf74cc>}>, '_migrate': True, '_pool_size': 0}>, tablename='members', *fields=(<gluon.dal.Field object>, <gluon.dal.Field object>, <gluon.dal.Field object>, <gluon.dal.Field object>, <gluon.dal.Field object>), **args={})"
+p162
+sg125
+S'define_table'
+p163
+sa(dp164
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p165
+sg105
+(dp166
+S'fake_migrate'
+p167
+g85
+ssg111
+I551
+sg112
+(dp168
+I546
+S'            self.file_close(tfile)'
+p169
+sI547
+S'            if sql_fields != sql_fields_old:'
+p170
+sI548
+S'                self.migrate_table(table,'
+p171
+sI549
+S'                                   sql_fields, sql_fields_old,'
+p172
+sI550
+S'                                   sql_fields_aux, logfile,'
+p173
+sI551
+S'                                   fake_migrate=fake_migrate)'
+p174
+sI552
+S'            self.file_close(logfile)'
+p175
+sI553
+S'        return query'
+p176
+sI554
+S''
+sI555
+S'    def migrate_table('
+p177
+ssg123
+S"(self=<gluon.dal.SQLiteAdapter object>, table=<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cf74cc>}>, migrate=True, fake_migrate=False, polymodel=None)"
+p178
+sg125
+S'create_table'
+p179
+sa(dp180
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p181
+sg105
+(dp182
+S'self'
+p183
+S'<gluon.dal.SQLiteAdapter object>'
+p184
+sS'self.execute'
+p185
+S'<bound method SQLiteAdapter.execute of <gluon.dal.SQLiteAdapter object>>'
+p186
+sS'sub_query'
+p187
+S"'ALTER TABLE members ADD profile CHAR(512) NOT NULL;'"
+p188
+ssg111
+I627
+sg112
+(dp189
+I622
+S'                               % datetime.datetime.today().isoformat())'
+p190
+sI623
+S"                table._db['_lastsql'] = '\\n'.join(query)"
+p191
+sI624
+S'                for sub_query in query:'
+p192
+sI625
+S"                    logfile.write(sub_query + '\\n')"
+p193
+sI626
+S'                    if not fake_migrate:'
+p194
+sI627
+S'                        self.execute(sub_query)'
+p195
+sI628
+S'                        # caveat. mysql, oracle and firebird do not allow multiple alter table'
+p196
+sI629
+S'                        # in one transaction so we must commit partial transactions and'
+p197
+sI630
+S'                        # update table._dbt after alter table.'
+p198
+sI631
+S'                        if table._db._adapter.commit_on_alter_table:'
+p199
+ssg123
+S"(self=<gluon.dal.SQLiteAdapter object>, table=<Table {'profile': <gluon.dal.Field object at 0x...c>, 'id': <gluon.dal.Field object at 0x9cf74cc>}>, sql_fields={'banned': 'CHAR(1)', 'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 'name': 'CHAR(512) NOT NULL', 'profile': 'CHAR(512) NOT NULL', 'removed': 'TIMESTAMP', 'warned': 'TIMESTAMP'}, sql_fields_old={'banned': 'CHAR(1)', 'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 'name': 'CHAR(512) NOT NULL', 'removed': 'TIMESTAMP', 'uid': 'INTEGER NOT NULL', 'warned': 'TIMESTAMP'}, sql_fields_aux={'banned': 'CHAR(1)', 'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 'name': 'CHAR(512) NOT NULL', 'profile': 'CHAR(512) NOT NULL', 'removed': 'TIMESTAMP', 'warned': 'TIMESTAMP'}, logfile=<open file '/home/tiago/moderatool/applications/moderatool/databases/sql.log', mode 'a'>, fake_migrate=False)"
+p200
+sg125
+S'migrate_table'
+p201
+sa(dp202
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p203
+sg105
+(dp204
+S'a'
+S"('ALTER TABLE members ADD profile CHAR(512) NOT NULL;',)"
+p205
+sS'self'
+p206
+S'<gluon.dal.SQLiteAdapter object>'
+p207
+sS'b'
+g20
+sS'self.log_execute'
+p208
+S'<bound method SQLiteAdapter.log_execute of <gluon.dal.SQLiteAdapter object>>'
+p209
+ssg111
+I1067
+sg112
+(dp210
+I1062
+S'    def log_execute(self,*a,**b):'
+p211
+sI1063
+S'        self.db._lastsql = a[0]'
+p212
+sI1064
+S'        return self.cursor.execute(*a,**b)'
+p213
+sI1065
+S''
+sI1066
+S'    def execute(self,*a,**b):'
+p214
+sI1067
+S'        return self.log_execute(*a, **b)'
+p215
+sI1068
+S''
+sI1069
+S'    def represent(self, obj, fieldtype):'
+p216
+sI1070
+S'        if type(obj) in (types.LambdaType, types.FunctionType):'
+p217
+sI1071
+S'            obj = obj()'
+p218
+ssg123
+S"(self=<gluon.dal.SQLiteAdapter object>, *a=('ALTER TABLE members ADD profile CHAR(512) NOT NULL;',), **b={})"
+p219
+sg125
+S'execute'
+p220
+sa(dp221
+g103
+S'/home/tiago/moderatool/gluon/dal.py'
+p222
+sg105
+(dp223
+S'a'
+S"('ALTER TABLE members ADD profile CHAR(512) NOT NULL;',)"
+p224
+sS'self.cursor'
+p225
+S'<sqlite3.Cursor object>'
+p226
+sS'self'
+p227
+S'<gluon.dal.SQLiteAdapter object>'
+p228
+sS'b'
+g20
+sS'self.cursor.execute'
+p229
+S'<built-in method execute of sqlite3.Cursor object>'
+p230
+ssg111
+I1064
+sg112
+(dp231
+I1059
+S'    def create_sequence_and_triggers(self, query, table, **args):'
+p232
+sI1060
+S'        self.execute(query)'
+p233
+sI1061
+S''
+sI1062
+S'    def log_execute(self,*a,**b):'
+p234
+sI1063
+S'        self.db._lastsql = a[0]'
+p235
+sI1064
+S'        return self.cursor.execute(*a,**b)'
+p236
+sI1065
+S''
+sI1066
+S'    def execute(self,*a,**b):'
+p237
+sI1067
+S'        return self.log_execute(*a, **b)'
+p238
+sI1068
+S''
+ssg123
+S"(self=<gluon.dal.SQLiteAdapter object>, *a=('ALTER TABLE members ADD profile CHAR(512) NOT NULL;',), **b={})"
+p239
+sg125
+S'log_execute'
+p240
+sasS'pyver'
+p241
+S'Python 2.6.5: /usr/bin/python'
+p242
+sS'session'
+p243
+(dp244
+S'auth'
+p245
+S'None'
+p246
+ssS'etype'
+p247
+S"<class 'sqlite3.OperationalError'>"
+p248
+sS'date'
+p249
+S'Fri Jan  7 23:03:30 2011'
+p250
+sS'response'
+p251
+(dp252
+S'status'
+p253
+S'200'
+p254
+sg63
+S'<cStringIO.StringO object>'
+p255
+sg80
+S"<SimpleCookie: session_id_moderatool='127.0.0.1-ea67f2f5-a77d-4471-86f1-39b07ebee0a5'>"
+p256
+sS'_vars'
+p257
+S'None'
+p258
+sS'title'
+p259
+S"'moderatool'"
+p260
+sS'menu'
+p261
+S"[(<lazyT 'Home'>, False, <gluon.html.XML object>, []), (<lazyT 'This App'>, False, <gluon.html.XML object>, [(<lazyT 'Controller'>, False, <gluon.html.XML object>), (<lazyT 'View'>, False, <gluon.html.XML object>), (<lazyT 'Layout'>, False, <gluon.html.XML object>), (<lazyT 'Stylesheet'>, False, <gluon.html.XML object>), (<lazyT 'DB Model'>, False, <gluon.html.XML object>), (<lazyT 'Menu Model'>, False, <gluon.html.XML object>), (<lazyT 'Database'>, False, <gluon.html.XML object>), (<lazyT 'Errors'>, False, <gluon.html.XML object>), (<lazyT 'About'>, False, <gluon.html.XML object>)]), (<lazyT 'Resources'>, False, None, [(<lazyT 'Documentation'>, False, 'http://www.web2py.com/book', [(<lazyT 'Preface'>, False, 'http://www.web2py.com/book/default/chapter/00'), (<lazyT 'Introduction'>, False, 'http://www.web2py.com/book/default/chapter/01'), (<lazyT 'Python'>, False, 'http://www.web2py.com/book/default/chapter/02'), (<lazyT 'Overview'>, False, 'http://www.web2py.com/book/default/chapter/03'), (<lazyT 'The Core'>, False, 'http://www.web2py.com/book/default/chapter/04'), (<lazyT 'The Views'>, False, 'http://www.web2py.com/book/default/chapter/05'), (<lazyT 'Database'>, False, 'http://www.web2py.com/book/default/chapter/06'), (<lazyT 'Forms and Validators'>, False, 'http://www.web2py.com/book/default/chapter/07'), (<lazyT 'Access Control'>, False, 'http://www.web2py.com/book/default/chapter/08'), (<lazyT 'Services'>, False, 'http://www.web2py.com/book/default/chapter/09'), (<lazyT 'Ajax Recipes'>, False, 'http://www.web2py.com/book/default/chapter/10'), (<lazyT 'Deployment Recipes'>, False, 'http://www.web2py.com/book/default/chapter/11'), (<lazyT 'Other Recipes'>, False, 'http://www.web2py.com/book/default/chapter/12'), (<lazyT 'Buy this book'>, False, 'http://stores.lulu.com/web2py')]), (<lazyT 'Community'>, False, None, [(<lazyT 'Groups'>, False, 'http://www.web2py.com/examples/default/usergroups'), (<lazyT 'Twitter'>, False, 'http://twitter.com/web2py'), (<lazyT 'Live chat'>, False, 'http://mibbit.com/?channel=%23web2py&server=irc.mibbit.net'), (<lazyT 'User Voice'>, False, 'http://web2py.uservoice.com/')]), (<lazyT 'Web2py'>, False, 'http://www.web2py.com', [(<lazyT 'Download'>, False, 'http://www.web2py.com/examples/default/download'), (<lazyT 'Support'>, False, 'http://www.web2py.com/examples/default/support'), (<lazyT 'Quick Examples'>, False, 'http://web2py.com/examples/default/examples'), (<lazyT 'FAQ'>, False, 'http://web2py.com/AlterEgo'), (<lazyT 'Free Applications'>, False, 'http://web2py.com/appliances'), (<lazyT 'Plugins'>, False, 'http://web2py.com/plugins'), (<lazyT 'Recipes'>, False, 'http://web2pyslices.com/'), (<lazyT 'Demo'>, False, 'http://web2py.com/demo_admin'), (<lazyT 'Semantic'>, False, 'http://web2py.com/semantic'), (<lazyT 'Layouts'>, False, 'http://web2py.com/layouts'), (<lazyT 'Videos'>, False, 'http://www.web2py.com/examples/default/videos/')])])]"
+p262
+sS'flash'
+p263
+S"''"
+p264
+sS'session_new'
+p265
+S'True'
+p266
+sS'_custom_rollback'
+p267
+S'None'
+p268
+sS'session_id'
+p269
+S"'127.0.0.1-ea67f2f5-a77d-4471-86f1-39b07ebee0a5'"
+p270
+sS'headers'
+p271
+S"<Storage {'Expires': 'Sat, 08 Jan 2011 01:03:30 ...he, must-revalidate, post-check=0, pre-check=0'}>"
+p272
+sS'meta'
+p273
+S"<Storage {'keywords': 'web2py, python, framework... 'Web2py Enterprise Framework', 'author': 'you'}>"
+p274
+sS'session_filename'
+p275
+S"'/home/tiago/moderatool/applications/moderatool/s...ns/127.0.0.1-ea67f2f5-a77d-4471-86f1-39b07ebee0a5'"
+p276
+sS'postprocessing'
+p277
+S'[]'
+p278
+sS'_caller'
+p279
+S'<function <lambda>>'
+p280
+sS'_view_environment'
+p281
+S"{'A': <class 'gluon.html.A'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, 'CODE': <class 'gluon.html.CODE'>, 'CRYPT': <class 'gluon.validators.CRYPT'>, 'DAL': <class 'gluon.dal.DAL'>, ...}"
+p282
+sS'subtitle'
+p283
+S"<lazyT 'customize me!'>"
+p284
+sS'session_id_name'
+p285
+S"'session_id_moderatool'"
+p286
+sS'_custom_commit'
+p287
+S'None'
+p288
+sS'files'
+p289
+S'[]'
+p290
+sS'view'
+p291
+S"'appadmin/index.html'"
+p292
+ssS'locals'
+p293
+(dp294
+S'a'
+S"('ALTER TABLE members ADD profile CHAR(512) NOT NULL;',)"
+p295
+sS'self'
+p296
+S'<gluon.dal.SQLiteAdapter object>'
+p297
+sS'b'
+g20
+sssS'traceback'
+p298
+S'Traceback (most recent call last):\n  File "/home/tiago/moderatool/gluon/restricted.py", line 188, in restricted\n    exec ccode in environment\n  File "/home/tiago/moderatool/applications/moderatool/models/models.py", line 19, in <module>\n    Field(\'banned\',  \'boolean\', writable=False))\n  File "/home/tiago/moderatool/gluon/dal.py", line 3431, in define_table\n    polymodel=polymodel)\n  File "/home/tiago/moderatool/gluon/dal.py", line 551, in create_table\n    fake_migrate=fake_migrate)\n  File "/home/tiago/moderatool/gluon/dal.py", line 627, in migrate_table\n    self.execute(sub_query)\n  File "/home/tiago/moderatool/gluon/dal.py", line 1067, in execute\n    return self.log_execute(*a, **b)\n  File "/home/tiago/moderatool/gluon/dal.py", line 1064, in log_execute\n    return self.cursor.execute(*a,**b)\nOperationalError: Cannot add a NOT NULL column with default value NULL\n'
+p299
+s.
